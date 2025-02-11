@@ -33,7 +33,9 @@ def prepare_flat_dataset():
         import pandas as pd
         import numpy as np
         import sqlalchemy
-        from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint # дополните импорты необходимых типов колонок
+        from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstrain
+        from sqlalchemy.dialects import mysql
+        # дополните импорты необходимых типов колонок
         from sqlalchemy import inspect
         hook = PostgresHook('destination_db')
         conn = hook.get_sqlalchemy_engine()
@@ -44,12 +46,13 @@ def prepare_flat_dataset():
             Column('id', Integer, primary_key=True, autoincrement=True),
             Column('flat_id', Integer),
             Column('floor', Integer),
+            Column('is_apartment', String),
             Column('kitchen_area', Float),
             Column('living_area', Float),
             Column('rooms', Integer),
             Column('studio', String),
             Column('total_area', Float),
-            Column('price', Integer),
+            Column('price', mysql.BIGINT),
             Column('build_year', Integer),
             Column('building_type_int', Integer),
             Column('living_cluster', Integer),
