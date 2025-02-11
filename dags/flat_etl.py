@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 import sqlalchemy
-from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint # дополните импорты необходимых типов колонок
+from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime, UniqueConstraint # дополните импорты необходимых типов колонок
 from sqlalchemy import inspect
 #from steps.messages import send_telegram_success_message, send_telegram_failure_message
 # Строка сверху хронически выдаёт ошибку, что модель steps не найден
@@ -26,14 +26,14 @@ def prepare_flat_dataset():
     import numpy as np
     from airflow.providers.postgres.hooks.postgres import PostgresHook
     import sqlalchemy
-    from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint # дополните импорты необходимых типов колонок
+    from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime, UniqueConstraint # дополните импорты необходимых типов колонок
     from sqlalchemy import inspect
     @task()
     def create_table()-> None:
         import pandas as pd
         import numpy as np
         import sqlalchemy
-        from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstrain
+        from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint
         from sqlalchemy.dialects import mysql
         # дополните импорты необходимых типов колонок
         from sqlalchemy import inspect
