@@ -3,6 +3,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from category_encoders import CatBoostEncoder
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
 from catboost import CatBoostRegressor
 import yaml
 import os
@@ -27,7 +28,7 @@ def fit_model():
         [
             ('binary', OneHotEncoder(drop=params['one_hot_drop']), binary_cat_features.columns.tolist()),
             ('cat', CatBoostEncoder(return_df=False), other_cat_features.columns.tolist()),
-            ('num', StandardScaler(), num_features.columns.tolist())
+            ('num', SimpleImputer(strategy='mean'), num_features.columns.tolist())
         ],
         remainder='drop',
         verbose_feature_names_out=False

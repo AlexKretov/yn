@@ -12,8 +12,11 @@ import sys
 import os
 
 # Добавляем путь к папке plugin\steps в sys.path
-sys.path.append('/home/mle-user/mle_projects/yn/plugins/steps')
-from messages import send_telegram_success_message, send_telegram_failure_message
+try:
+    from steps.messages import send_telegram_success_message, send_telegram_failure_message, deal_outlier
+except:
+    sys.path.append('/home/mle-user/mle_projects/yn/plugins/steps')
+    from messages import send_telegram_success_message, send_telegram_failure_message, deal_outlier
 @dag(
     dag_id='flats_etl',
     schedule='@once',
@@ -33,7 +36,7 @@ def prepare_flat_dataset():
         import pandas as pd
         import numpy as np
         import sqlalchemy
-        from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint
+        from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint, Numeric
         from sqlalchemy.dialects import mysql
         # дополните импорты необходимых типов колонок
         from sqlalchemy import inspect
@@ -52,7 +55,7 @@ def prepare_flat_dataset():
             Column('rooms', mysql.BIGINT),
             Column('studio', String),
             Column('total_area', Float),
-            Column('price', mysql.BIGINT),
+            Column('price', Numeric),
             Column('build_year', mysql.BIGINT),
             Column('building_type_int', mysql.BIGINT),
             Column('living_cluster', mysql.BIGINT),
@@ -102,6 +105,9 @@ def prepare_flat_dataset():
     @task()
     def transform(data: pd.DataFrame):
         from sklearn.cluster import KMeans
+        data = data.dropna(subset=['price'])
+        data = deal_outlier(data)
+        data = data.drop_duplicates()
         coordinates = np.array(data[['latitude', 'longitude']])
         kmeans = KMeans(n_clusters=6, init='k-means++', max_iter=300, n_init=10, random_state=0)
         array = kmeans.fit_predict(coordinates)
