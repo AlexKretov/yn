@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
 from catboost import CatBoostRegressor
 import yaml
-import osgit add dvc.lock dvc.yaml params.yaml scripts/
+import os
 import joblib
 
 # обучение модели
