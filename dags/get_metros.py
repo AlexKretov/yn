@@ -1,7 +1,5 @@
 import requests
 import pandas as pd
-import boto3
-from io import StringIO
 
 @dag(
     dag_id='get_metros',
@@ -14,8 +12,6 @@ from io import StringIO
 def get_metro():
     import requests
     import pandas as pd
-    import boto3
-    from io import StringIO
     @task()
     def create_metro_table()-> None:
         import pandas as pd
@@ -44,9 +40,6 @@ def get_metro():
     @task()
     def get_csv_from_github(url):
         import requests
-        import pandas as pd
-        import boto3
-        from io import StringIO
         github_raw_url = url
         response = requests.get(github_raw_url)
         csv_content = response.content.decode('utf-8')
@@ -66,3 +59,5 @@ def get_metro():
     csv_content = get_csv_from_github("https://github.com/AlexKretov/yn/blob/main/metro_stations.csv")
     load(csv_content)
 get_metro()
+
+
