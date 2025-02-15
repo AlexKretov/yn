@@ -13,10 +13,10 @@ import os
 
 # Добавляем путь к папке plugin\steps в sys.path
 try:
-    from steps.messages import send_telegram_success_message, send_telegram_failure_message, deal_outlier
+    from steps.messages import send_telegram_success_message, send_telegram_failure_message, deal_outlier, manhattan_distance, find_nearest_metro
 except:
     sys.path.append('/home/mle-user/mle_projects/yn/plugins/steps')
-    from messages import send_telegram_success_message, send_telegram_failure_message, deal_outlier
+    from messages import send_telegram_success_message, send_telegram_failure_message, deal_outlier, manhattan_distance, find_nearest_metro
 @dag(
     dag_id='flats_etl',
     schedule='@once',
@@ -58,7 +58,8 @@ def prepare_flat_dataset():
             Column('price', Numeric),
             Column('build_year', mysql.BIGINT),
             Column('building_type_int', mysql.BIGINT),
-            Column('living_cluster', mysql.BIGINT),
+            Column('nearest_metro', String),
+            Column('distance_to_metro', Float),
             Column('ceiling_height', Float),
             Column('flats_count', mysql.BIGINT),
             Column('floors_total', mysql.BIGINT),
@@ -99,20 +100,29 @@ def prepare_flat_dataset():
             
         '''
         data = pd.read_sql(sql, conn)
+        sql = '''
+            SELECT * FROM metro_stations
+        '''
+        all_stations = pd.read_sql(sql, conn)
         conn.close()
-        return data
+        return data, all_stations
 
     @task()
-    def transform(data: pd.DataFrame):
+    def transform(data: pd.DataFrame, all_stations: pd.DataFrame):
         from sklearn.cluster import KMeans
+        import numpy as np
+        from scipy.spatial.distance import cdist
+        from tqdm import tqdm
         data = data.dropna(subset=['price'])
         data = deal_outlier(data)
         data = data.drop_duplicates()
-        coordinates = np.array(data[['latitude', 'longitude']])
-        kmeans = KMeans(n_clusters=6, init='k-means++', max_iter=300, n_init=10, random_state=0)
-        array = kmeans.fit_predict(coordinates)
-        data['living_cluster'] = array
+        tqdm.pandas()
+        data[['nearest_metro', 'distance_to_metro']] = data.progress_apply(
+                lambda row: pd.Series(find_nearest_metro(row['latitude'], row['longitude'], all_stations)), 
+                axis=1
+            )
         data = data.drop(['latitude', 'longitude'], axis=1)
+
         return data
 
     @task()
@@ -128,7 +138,7 @@ def prepare_flat_dataset():
 
         # ваш код здесь #
     create_table()
-    data = extract()
-    transformed_data = transform(data)
+    data, all_stations = extract()
+    transformed_data = transform(data, all_stations)
     load(transformed_data)
 prepare_flat_dataset()

@@ -50,7 +50,7 @@ argcomplete==3.1.6
 asgiref==3.7.2
 asttokens==2.4.1
 async-timeout==4.0.3
-asyncssh==2.14.2
+asyncssh==2.13.1
 atpublic==4.0
 attrs==23.1.0
 backoff==2.2.1
@@ -82,7 +82,7 @@ contourpy==1.2.0
 crashtest==0.4.1
 cron_descriptor==1.4.0
 croniter==2.0.1
-cryptography==41.0.7
+cryptography==38.0.0
 pyopenssl==23.0.0
 cycler==0.12.1
 debugpy==1.8.1
