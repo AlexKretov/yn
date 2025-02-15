@@ -58,12 +58,12 @@ def prepare_flat_dataset():
             Column('price', Numeric),
             Column('build_year', mysql.BIGINT),
             Column('building_type_int', mysql.BIGINT),
-            Column('nearest_metro', String),
-            Column('distance_to_metro', Float),
             Column('ceiling_height', Float),
             Column('flats_count', mysql.BIGINT),
             Column('floors_total', mysql.BIGINT),
             Column('has_elevator', String),
+            Column('nearest_metro', String),
+            Column('distance_to_metro', Float),
             UniqueConstraint('flat_id', name='unique_flat_id')
         )
         if not inspect(conn).has_table(flat_dataset.name): 
@@ -71,7 +71,6 @@ def prepare_flat_dataset():
 
     @task()
     def extract(**kwargs):
-
         hook = PostgresHook('destination_db')
         conn = hook.get_conn()
         sql ='''
@@ -100,12 +99,20 @@ def prepare_flat_dataset():
             
         '''
         data = pd.read_sql(sql, conn)
-        sql = '''
-            SELECT * FROM metro_stations
-        '''
-        all_stations = pd.read_sql(sql, conn)
         conn.close()
-        return data, all_stations
+        return data
+    
+    @task()
+    def get_stations(**kwargs):
+        hook = PostgresHook('destination_db')
+        conn = hook.get_conn()
+        sql2 = '''
+            SELECT * FROM metro_stations
+            '''
+        all_stations = pd.read_sql(sql2, conn)
+        conn.close()
+        return all_stations
+    
 
     @task()
     def transform(data: pd.DataFrame, all_stations: pd.DataFrame):
@@ -138,7 +145,8 @@ def prepare_flat_dataset():
 
         # ваш код здесь #
     create_table()
-    data, all_stations = extract()
+    data = extract()
+    all_stations = get_stations()
     transformed_data = transform(data, all_stations)
     load(transformed_data)
 prepare_flat_dataset()
