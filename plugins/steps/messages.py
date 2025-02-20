@@ -22,3 +22,12 @@ def send_telegram_failure_message(context):
         'chat_id': '##################',
         'text': message
     }) # отправление сообщения 
+
+def deal_outlier(data):
+    Q1 = data['price'].quantile(0.25)
+    Q3 = data['price'].quantile(0.75)
+    IQR = Q3 - Q1
+
+    filter = (data['price'] >= Q1 - 1.5 * IQR) & (data['price']<= Q3 + 1.5 *IQR)
+    train2 = data.loc[filter]  
+    return train2

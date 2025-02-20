@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 import sqlalchemy
-from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint # дополните импорты необходимых типов колонок
+from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime, UniqueConstraint # дополните импорты необходимых типов колонок
 from sqlalchemy import inspect
 #from steps.messages import send_telegram_success_message, send_telegram_failure_message
 # Строка сверху хронически выдаёт ошибку, что модель steps не найден
@@ -12,8 +12,11 @@ import sys
 import os
 
 # Добавляем путь к папке plugin\steps в sys.path
-sys.path.append('/home/mle-user/mle_projects/yn/plugins/steps')
-from messages import send_telegram_success_message, send_telegram_failure_message
+try:
+    from steps.messages import send_telegram_success_message, send_telegram_failure_message, deal_outlier
+except:
+    sys.path.append('/home/mle-user/mle_projects/yn/plugins/steps')
+    from messages import send_telegram_success_message, send_telegram_failure_message, deal_outlier
 @dag(
     dag_id='flats_etl',
     schedule='@once',
@@ -26,14 +29,16 @@ def prepare_flat_dataset():
     import numpy as np
     from airflow.providers.postgres.hooks.postgres import PostgresHook
     import sqlalchemy
-    from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint # дополните импорты необходимых типов колонок
+    from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime, UniqueConstraint # дополните импорты необходимых типов колонок
     from sqlalchemy import inspect
     @task()
     def create_table()-> None:
         import pandas as pd
         import numpy as np
         import sqlalchemy
-        from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint # дополните импорты необходимых типов колонок
+        from sqlalchemy import MetaData, Table, Column, String, Integer, Float, DateTime,UniqueConstraint, Numeric
+        from sqlalchemy.dialects import mysql
+        # дополните импорты необходимых типов колонок
         from sqlalchemy import inspect
         hook = PostgresHook('destination_db')
         conn = hook.get_sqlalchemy_engine()
@@ -41,21 +46,22 @@ def prepare_flat_dataset():
         flat_dataset = Table(
             'flat_dataset',
             metadata,
-            Column('id', Integer, primary_key=True, autoincrement=True),
-            Column('flat_id', Integer),
-            Column('floor', Integer),
+            Column('id', mysql.BIGINT, primary_key=True, autoincrement=True),
+            Column('flat_id', mysql.BIGINT),
+            Column('floor', mysql.BIGINT),
+            Column('is_apartment', String),
             Column('kitchen_area', Float),
             Column('living_area', Float),
-            Column('rooms', Integer),
+            Column('rooms', mysql.BIGINT),
             Column('studio', String),
             Column('total_area', Float),
-            Column('price', Integer),
-            Column('build_year', Integer),
-            Column('building_type_int', Integer),
-            Column('living_cluster', Integer),
+            Column('price', Numeric),
+            Column('build_year', mysql.BIGINT),
+            Column('building_type_int', mysql.BIGINT),
+            Column('living_cluster', mysql.BIGINT),
             Column('ceiling_height', Float),
-            Column('flats_count', Integer),
-            Column('floors_total', Integer),
+            Column('flats_count', mysql.BIGINT),
+            Column('floors_total', mysql.BIGINT),
             Column('has_elevator', String),
             UniqueConstraint('flat_id', name='unique_flat_id')
         )
@@ -99,6 +105,9 @@ def prepare_flat_dataset():
     @task()
     def transform(data: pd.DataFrame):
         from sklearn.cluster import KMeans
+        data = data.dropna(subset=['price'])
+        data = deal_outlier(data)
+        data = data.drop_duplicates()
         coordinates = np.array(data[['latitude', 'longitude']])
         kmeans = KMeans(n_clusters=6, init='k-means++', max_iter=300, n_init=10, random_state=0)
         array = kmeans.fit_predict(coordinates)
