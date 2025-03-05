@@ -20,12 +20,11 @@ stages:
       - index_col
       - target_col
       - one_hot_drop
-      - iterations
       - learning_rate
+      - min_child_samples
       - depth
       - loss_function
-      - eval_metric
-      - random_seed
+      - random_state
     outs:
       - models/fitted_model.pkl
   evaluate_model:

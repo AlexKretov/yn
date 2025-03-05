@@ -17,8 +17,8 @@ def evaluate_model():
     cv_strategy = StratifiedKFold(n_splits=params['n_splits'])
     cv_res = cross_validate(
         pipeline,
-        data,
-        data['price'],
+        data.drop([params['target_col']], axis=1),
+        data[params['target_col']],
         cv=cv_strategy,
         n_jobs=params['n_jobs'],
         scoring=params['metrics']

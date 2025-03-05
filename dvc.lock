@@ -29,41 +29,36 @@ stages:
       size: 17720971
     - path: scripts/fit.py
       hash: md5
-      md5: a4ba19b0d028b811efa9354a7d8d3e1c
-      size: 2283
+      md5: 4825930166d0e816f3104cc93262bd01
+      size: 1623
     params:
       params.yaml:
         autostage: true
         depth: 6
-        eval_metric: RMSE
         index_col: flat_id
-        iterations: 1000
         learning_rate: 0.1
         loss_function: RMSE
+        min_child_samples: 3
         one_hot_drop: if_binary
-        random_seed: 42
+        random_state: 42
         retrain: true
         target_col: price
     outs:
     - path: models/fitted_model.pkl
       hash: md5
-      md5: 339fdb26a56414a8aa0a4b6975101c33
-      size: 1122184
-      cloud:
-        my_storage:
-          etag: 339fdb26a56414a8aa0a4b6975101c33
-          version_id: 00062F84E25C8DE6
+      md5: a1bc98bad9b11a456eef45d8d5fd45f2
+      size: 1186335
   evaluate_model:
     cmd: python scripts/evaluate.py
     deps:
     - path: models/fitted_model.pkl
       hash: md5
-      md5: 339fdb26a56414a8aa0a4b6975101c33
-      size: 1122184
+      md5: a1bc98bad9b11a456eef45d8d5fd45f2
+      size: 1186335
     - path: scripts/evaluate.py
       hash: md5
-      md5: 4127cb51b67cd7befe31deee25139788
-      size: 1306
+      md5: 7014bd887c0395d126c1e5405cf0ddbd
+      size: 1356
     params:
       params.yaml:
         autostage: true
@@ -80,9 +75,5 @@ stages:
     outs:
     - path: cv_results/cv_res.json
       hash: md5
-      md5: c38101bcb49ae41c08ead693af0be9aa
-      size: 200
-      cloud:
-        my_storage:
-          etag: c38101bcb49ae41c08ead693af0be9aa
-          version_id: 00062F84E25B4DD4
+      md5: 82b75efcb29f892788b89dff91b17d1a
+      size: 204
