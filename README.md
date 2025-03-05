@@ -33,6 +33,9 @@
 Убедтесь, что S3_BUCKET_NAME=s3-student-mle-20250130-833968fcc1 - это важно для корректной работы проекты.
 ### Запустите ML-Flow Registry Server
  Выполните в командной строке активацию сервера:
- *sh run_mlflow_server.sh*
+ *sh run_mlflow_server.sh* [https://github.com/AlexKretov/yn/blob/06abedc2dce9a72f979d40b30d7b322513b8cf61/run_mlflow_server.sh](#Здесь находится файл с настройками сервера)
 Теперь всё готово и можно загрузить набор данных полученных на прошлом спринте.
+### Загрузка старой модели
+Для загрузки модели из первого спринта необходимо запустить тетрадку yn/notebooks/baseline.ipynb
+
 
