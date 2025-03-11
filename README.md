@@ -36,6 +36,7 @@
  *sh run_mlflow_server.sh* [#Здесь находится файл с настройками сервера](https://github.com/AlexKretov/yn/blob/06abedc2dce9a72f979d40b30d7b322513b8cf61/run_mlflow_server.sh)
 Теперь всё готово и можно загрузить набор данных полученных на прошлом спринте.
 ### Загрузка старой модели
-Для загрузки модели из первого спринта необходимо запустить тетрадку yn/notebooks/baseline.ipynb
+Для загрузки модели из первого спринта необходимо запустить тетрадку 
+[#вот эту тетрадку](https://github.com/AlexKretov/yn/blob/bee2f6b5bb75f0aed1330b3a15cf4694d937a242/notebooks/baseline.ipynb)
 
 
