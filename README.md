@@ -38,5 +38,13 @@
 ### Загрузка старой модели
 Для загрузки модели из первого спринта необходимо запустить тетрадку 
 [#вот эту тетрадку](https://github.com/AlexKretov/yn/blob/bee2f6b5bb75f0aed1330b3a15cf4694d937a242/notebooks/baseline.ipynb)
-
+### Анализ данных
+Следующий код позволяет изучить набор данных в детелях и графиках:
+[#eda.ipynb](https://github.com/AlexKretov/yn/blob/8b16241554327cf3e95fd4377afd2e6462f5fc1c/notebooks/eda.ipynb)
+### Генерация признаков
+Для окончательной предобработки и генерации новых признаков, запускается вот эта тетрадка: 
+[#fitting.ipynb](https://github.com/AlexKretov/yn/blob/8b16241554327cf3e95fd4377afd2e6462f5fc1c/notebooks/fitting.ipynb)
+### Оптимизация гиперпараметров
+Здесь проводится окончательная доводка и оценка модели.
+[#tuning.ipynb](https://github.com/AlexKretov/yn/blob/8b16241554327cf3e95fd4377afd2e6462f5fc1c/notebooks/tuning.ipynb)
 
